@@ -1,6 +1,6 @@
 package com.example.project.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 
@@ -39,7 +39,7 @@ public class ReadingGoal {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    // ✅ 진행률 업데이트 메서드
+    // 진행률 업데이트 메서드
     public void updateProgress() {
         bookProgress = (targetBooks > 0) ? ((double) completedBooks / targetBooks) * 100 : 0;
         reviewProgress = (targetReviews > 0) ? ((double) completedReviews / targetReviews) * 100 : 0;
@@ -51,7 +51,7 @@ public class ReadingGoal {
         }
     }
 
-    // ✅ 목표 달성 업데이트 메서드 (책, 감상문, 독서 시간)
+    // 목표 달성 업데이트 메서드 (책, 감상문, 독서 시간)
     public void completeBook() {
         this.completedBooks++;
         updateProgress();

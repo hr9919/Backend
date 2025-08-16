@@ -1,7 +1,7 @@
 package com.example.project.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,5 +18,5 @@ public class Book {
     private String title;
     private String author;
     private String genre;
-    private int totalPages; // 전체 페이지 수
+    private int totalPages;
 }

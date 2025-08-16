@@ -3,72 +3,66 @@ package com.example.project.service;
 import com.example.project.dto.BookDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpMethod;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AladinService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RestTemplate restTemplate;
 
-    private static final String ALADIN_API_URL = "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
-    private static final String TTB_KEY = "ttbheebi16541715001";
+    @Value("${aladin.api.key}")
+    private String apiKey;
 
-    public List<BookDto> searchBooks(String keyword) {
-        String requestUrl = ALADIN_API_URL +
-                "?TTBKey=" + TTB_KEY +
-                "&Query=" + keyword +
-                "&QueryType=Title&MaxResults=10&SearchTarget=Book&output=js&Version=20131101";
+    public AladinService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-        List<BookDto> books = new ArrayList<>();
-        
+    public List<BookDto> searchBooks(String query) {
         try {
-            // API 호출
-            ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
+            String url = UriComponentsBuilder.fromHttpUrl("https://www.aladin.co.kr/ttb/api/ItemSearch.aspx")
+                    .queryParam("ttbkey", apiKey)
+                    .queryParam("Query", URLEncoder.encode(query, StandardCharsets.UTF_8))
+                    .queryParam("QueryType", "Title")
+                    .queryParam("MaxResults", 10)
+                    .queryParam("output", "js")
+                    .build()
+                    .toUriString();
 
-            // 응답이 정상적인 경우에만 처리
-            if (response.getStatusCode().is2xxSuccessful()) {
-                // JSON 파싱
-                JsonNode root = objectMapper.readTree(response.getBody());
-                JsonNode items = root.path("item");
+            String response = restTemplate.getForObject(url, String.class);
 
-                // 'item'이 존재하지 않으면 빈 리스트 반환
-                if (items.isArray()) {
-                    for (JsonNode item : items) {
-                        String category = item.path("categoryName").asText(); // 🔹 장르
-                        int totalPages = item.path("subInfo").path("itemPage").asInt(0); // 🔹 전체 페이지 수 (없으면 0)
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+            JsonNode items = root.path("item");
 
-                        BookDto book = new BookDto(
-                                item.path("title").asText(),
-                                item.path("author").asText(),
-                                item.path("publisher").asText(),
-                                item.path("pubDate").asText(),
-                                item.path("isbn").asText(),
-                                item.path("cover").asText(),
-                                item.path("link").asText(),
-                                category,
-                                totalPages
-                        );
-                        books.add(book);
-                    }
+            List<BookDto> books = new ArrayList<>();
+            if (items.isArray()) {
+                for (JsonNode item : items) {
+                    books.add(new BookDto(
+                            item.path("title").asText(""),
+                            item.path("author").asText(""),
+                            item.path("publisher").asText(""),
+                            item.path("pubDate").asText(""),
+                            item.path("isbn").asText(""),
+                            item.path("isbn13").asText(""),
+                            item.path("cover").asText(""),
+                            item.path("link").asText(""),
+                            item.path("categoryName").asText(""),
+                            item.path("itemPage").asInt(0)
+                    ));
                 }
-            } else {
-                // 응답 코드가 2xx가 아닌 경우 오류 로그 추가
-                System.err.println("API 요청 실패, 상태 코드: " + response.getStatusCode());
             }
-        } catch (Exception e) {
-            // API 호출, JSON 파싱, 기타 예외 처리
-            e.printStackTrace();
-        }
+            return books;
 
-        return books;
+        } catch (Exception e) {
+            throw new RuntimeException("알라딘 API 호출/파싱 중 오류 발생", e);
+        }
     }
 }
