@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "books")
 public class Book {
 
@@ -18,5 +19,5 @@ public class Book {
     private String title;
     private String author;
     private String genre;
-    private int totalPages;
+    private int totalPages; // 전체 페이지 수
 }

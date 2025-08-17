@@ -24,17 +24,18 @@ public class ReadingGoalService {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID=" + dto.getUserId()));
 
-        ReadingGoal goal = new ReadingGoal();
-        goal.setUser(user);
-        goal.setGoalType(dto.getGoalType());
-        goal.setTargetBooks(dto.getTargetBooks());
-        goal.setTargetReviews(dto.getTargetReviews());
-        goal.setTargetMinutes(dto.getTargetMinutes());
-        goal.setCompletedBooks(0);
-        goal.setCompletedReviews(0);
-        goal.setCompletedMinutes(0);
-        goal.setStartDate(dto.getStartDate());
-        goal.setEndDate(dto.getEndDate());
+        ReadingGoal goal = ReadingGoal.builder()
+                .user(user)
+                .goalType(dto.getGoalType())
+                .targetBooks(dto.getTargetBooks())
+                .completedBooks(0)
+                .targetReviews(dto.getTargetReviews())
+                .completedReviews(0)
+                .targetMinutes(dto.getTargetMinutes())
+                .completedMinutes(0)
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .build();
 
         goal.updateProgress();
         return ReadingGoalDto.fromEntity(goalRepository.save(goal));
@@ -42,9 +43,9 @@ public class ReadingGoalService {
 
     // 목표 조회
     public ReadingGoalDto getGoal(Long id) {
-        return goalRepository.findById(id)
-                .map(ReadingGoalDto::fromEntity)
+        ReadingGoal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("목표를 찾을 수 없습니다. ID=" + id));
+        return ReadingGoalDto.fromEntity(goal);
     }
 
     // 목표 수정
@@ -52,11 +53,12 @@ public class ReadingGoalService {
         ReadingGoal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("목표를 찾을 수 없습니다. ID=" + id));
 
+        goal.setGoalType(dto.getGoalType());
         goal.setTargetBooks(dto.getTargetBooks());
         goal.setTargetReviews(dto.getTargetReviews());
         goal.setTargetMinutes(dto.getTargetMinutes());
-        goal.updateProgress();
 
+        goal.updateProgress();
         return ReadingGoalDto.fromEntity(goalRepository.save(goal));
     }
 
@@ -89,41 +91,32 @@ public class ReadingGoalService {
         return ReadingGoalDto.fromEntity(goalRepository.save(goal));
     }
 
-    // 사용자 아이디와 날짜 기준으로 독서 시간 반영
-    public void addReadingTimeByUser(Long userId, int minutes) {
-        LocalDate today = LocalDate.now();
-        List<ReadingGoal> goals = goalRepository.findByUserIdAndStartDateBeforeAndEndDateAfter(
-                userId, today, today
-        );
-
-        for (ReadingGoal goal : goals) {
-            goal.addReadingTime(minutes);
-            goalRepository.save(goal);
-        }
-    }
-
-    // 사용자 아이디와 날짜 기준으로 책 완료 처리
+    // 사용자별 책 완료 처리
     public void completeBookByUser(Long userId) {
         LocalDate today = LocalDate.now();
-        List<ReadingGoal> goals = goalRepository.findByUserIdAndStartDateBeforeAndEndDateAfter(
-                userId, today, today
-        );
-
+        List<ReadingGoal> goals = goalRepository.findByUserIdAndStartDateBeforeAndEndDateAfter(userId, today, today);
         for (ReadingGoal goal : goals) {
             goal.completeBook();
             goalRepository.save(goal);
         }
     }
 
-    // 사용자 아이디와 날짜 기준으로 리뷰 완료 처리
+    // 사용자별 리뷰 완료 처리
     public void completeReviewByUser(Long userId) {
         LocalDate today = LocalDate.now();
-        List<ReadingGoal> goals = goalRepository.findByUserIdAndStartDateBeforeAndEndDateAfter(
-                userId, today, today
-        );
-
+        List<ReadingGoal> goals = goalRepository.findByUserIdAndStartDateBeforeAndEndDateAfter(userId, today, today);
         for (ReadingGoal goal : goals) {
             goal.completeReview();
+            goalRepository.save(goal);
+        }
+    }
+
+    // 사용자별 독서 시간 추가
+    public void addReadingTimeByUser(Long userId, int minutes) {
+        LocalDate today = LocalDate.now();
+        List<ReadingGoal> goals = goalRepository.findByUserIdAndStartDateBeforeAndEndDateAfter(userId, today, today);
+        for (ReadingGoal goal : goals) {
+            goal.addReadingTime(minutes);
             goalRepository.save(goal);
         }
     }

@@ -1,38 +1,54 @@
 package com.example.project.controller;
 
 import com.example.project.dto.ReadingLogDto;
-import com.example.project.dto.ReadingLogStatsDto;
+import com.example.project.entity.Book;
+import com.example.project.entity.ReadingLog;
 import com.example.project.entity.User;
+import com.example.project.service.BookService;
 import com.example.project.service.ReadingLogService;
+import com.example.project.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/logs")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class ReadingLogController {
 
+    private final UserService userService;
+    private final BookService bookService;
     private final ReadingLogService logService;
 
-    // 독서 기록 추가 or 수정
-    @PostMapping
-    public ReadingLogDto addOrUpdateLog(@RequestBody ReadingLogDto dto,
-                                        @AuthenticationPrincipal User user) {
-        return logService.addOrUpdateReadingLog(dto, user);
+    @PostMapping("/{userId}/books/{bookId}/logs")
+    public ResponseEntity<ReadingLogDto> createOrUpdateLog(
+            @PathVariable Long userId,
+            @PathVariable Long bookId,
+            @RequestBody ReadingLogDto dto) {
+
+        User user = userService.findById(userId);
+        Book book = bookService.findById(bookId);
+        ReadingLog log = dto.toEntity(user, book);
+        ReadingLog savedLog = logService.addOrUpdateReadingLog(user, book, log);
+
+        return ResponseEntity.ok(new ReadingLogDto(savedLog));
     }
 
-    // 사용자별 독서 기록 조회
-    @GetMapping
-    public List<ReadingLogDto> getLogsByUser(@AuthenticationPrincipal User user) {
-        return logService.getLogsByUser(user.getId()); // <-- 수정된 부분
+    @GetMapping("/{userId}/logs")
+    public ResponseEntity<List<ReadingLogDto>> getLogsByUser(@PathVariable Long userId) {
+        User user = userService.findById(userId);
+        List<ReadingLogDto> logs = logService.getLogsByUser(user)
+                .stream()
+                .map(ReadingLogDto::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(logs);
     }
 
-    // 사용자별 독서 통계 조회
-    @GetMapping("/stats")
-    public ReadingLogStatsDto getReadingStats(@AuthenticationPrincipal User user) {
-        return logService.getReadingStats(user.getId()); // <-- 수정된 부분
+    @GetMapping("/{userId}/logs/stats")
+    public ResponseEntity<?> getReadingStats(@PathVariable Long userId) {
+        User user = userService.findById(userId);
+        return ResponseEntity.ok(logService.getReadingStats(user));
     }
 }

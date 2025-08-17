@@ -1,49 +1,39 @@
 package com.example.project.dto;
 
-import com.example.project.entity.Book;
 import com.example.project.entity.ReadingLog;
-import com.example.project.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class ReadingLogDto {
+
     private Long id;
     private Long userId;
     private Long bookId;
-    private LocalDate logDate;
-    private Integer pagesRead;
-    private Integer minutesRead;
+    private int pagesRead;
+    private int minutesRead;
+    private LocalDateTime readAt;
 
-    // DTO -> Entity 변환
-    public ReadingLog convertToEntity(User user, Book book) {
-        if (user == null || book == null) {
-            throw new IllegalArgumentException("User 또는 Book이 null입니다.");
-        }
+    public ReadingLog toEntity(com.example.project.entity.User user, com.example.project.entity.Book book) {
         return ReadingLog.builder()
-                .id(this.id)
                 .user(user)
                 .book(book)
-                .logDate(this.logDate)
                 .pagesRead(this.pagesRead)
                 .minutesRead(this.minutesRead)
+                .readAt(this.readAt != null ? this.readAt : LocalDateTime.now())
                 .build();
     }
 
-    // Entity -> DTO 변환
-    public static ReadingLogDto fromEntity(ReadingLog log) {
-        return new ReadingLogDto(
-                log.getId(),
-                log.getUser().getId(),
-                log.getBook().getId(),
-                log.getLogDate(),
-                log.getPagesRead(),
-                log.getMinutesRead()
-        );
+    public ReadingLogDto(ReadingLog log) {
+        this.id = log.getId();
+        this.userId = log.getUser().getId();
+        this.bookId = log.getBook().getId();
+        this.pagesRead = log.getPagesRead();
+        this.minutesRead = log.getMinutesRead();
+        this.readAt = log.getReadAt();
     }
 }

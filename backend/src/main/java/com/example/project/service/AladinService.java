@@ -45,18 +45,18 @@ public class AladinService {
             List<BookDto> books = new ArrayList<>();
             if (items.isArray()) {
                 for (JsonNode item : items) {
-                    books.add(new BookDto(
-                            item.path("title").asText(""),
-                            item.path("author").asText(""),
-                            item.path("publisher").asText(""),
-                            item.path("pubDate").asText(""),
-                            item.path("isbn").asText(""),
-                            item.path("isbn13").asText(""),
-                            item.path("cover").asText(""),
-                            item.path("link").asText(""),
-                            item.path("categoryName").asText(""),
-                            item.path("itemPage").asInt(0)
-                    ));
+                    books.add(BookDto.builder()
+                            .title(item.path("title").asText(""))
+                            .author(item.path("author").asText(""))
+                            .publisher(item.path("publisher").asText(""))
+                            .pubDate(item.path("pubDate").asText(""))
+                            .isbn(item.path("isbn").asText(""))
+                            .isbn13(item.path("isbn13").asText(""))
+                            .cover(item.path("cover").asText(""))
+                            .link(item.path("link").asText(""))
+                            .categoryName(item.path("categoryName").asText(""))
+                            .itemPage(item.path("itemPage").asInt(0))
+                            .build());
                 }
             }
             return books;
