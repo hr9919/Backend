@@ -4,6 +4,7 @@ spring:
     username: melting
     password: books
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -11,9 +12,22 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+
   jackson:
     serialization:
       INDENT_OUTPUT: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 40738270121-uvsq8v0nt25f0pakjsoooinpd6dqk5d0.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://meltingbooks.o-r.kr:8080/auth/GOOGLE/callback
+            scope:
+              - email
+              - profile
 
 server:
   address: 0.0.0.0

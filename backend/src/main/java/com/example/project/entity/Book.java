@@ -9,7 +9,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "books")
 public class Book {
 
     @Id
@@ -18,6 +17,13 @@ public class Book {
 
     private String title;
     private String author;
-    private String genre;
-    private int totalPages; // 전체 페이지 수
+    private String publisher; // 추가
+    private String pubDate;
+    private String isbn;
+    private String isbn13;
+    private String cover;
+    private String link;
+    private String categoryName;
+    private int itemPage;
 }
+
