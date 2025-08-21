@@ -9,7 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class BookDto {
-    private Long id;
     private String title;
     private String author;
     private String publisher;
@@ -21,17 +20,18 @@ public class BookDto {
     private String categoryName;
     private int itemPage;
 
-    public BookDto(Book book) {
-        this.id = book.getId();
-        this.title = book.getTitle();
-        this.author = book.getAuthor();
-        this.publisher = book.getPublisher();
-        this.pubDate = book.getPubDate();
-        this.isbn = book.getIsbn();
-        this.isbn13 = book.getIsbn13();
-        this.cover = book.getCover();
-        this.link = book.getLink();
-        this.categoryName = book.getCategoryName();
-        this.itemPage = book.getItemPage();
+    public Book toEntity() {
+        return Book.builder()
+                .title(this.title)
+                .author(this.author)
+                .publisher(this.publisher)
+                .pubDate(this.pubDate)
+                .isbn(this.isbn)
+                .isbn13(this.isbn13)
+                .cover(this.cover)
+                .link(this.link)
+                .categoryName(this.categoryName)
+                .itemPage(this.itemPage)
+                .build();
     }
 }

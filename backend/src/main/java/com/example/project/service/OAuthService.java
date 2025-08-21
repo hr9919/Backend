@@ -104,8 +104,7 @@ public class OAuthService {
 
         user = userRepository.save(user);
 
-        // 구글 accessToken 대신 서버에서 JWT 발급
-        String jwt = jwtUtil.generateToken(user.getId().toString());
+        String jwt = jwtUtil.generateToken(user.getId());
 
         return new UserDto(
                 user.getId(),

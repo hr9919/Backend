@@ -3,17 +3,17 @@ package com.example.project.service;
 import com.example.project.dto.BookDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AladinService {
 
     private final RestTemplate restTemplate;
@@ -21,18 +21,17 @@ public class AladinService {
     @Value("${aladin.api.key}")
     private String apiKey;
 
-    public AladinService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
     public List<BookDto> searchBooks(String query) {
         try {
             String url = UriComponentsBuilder.fromHttpUrl("https://www.aladin.co.kr/ttb/api/ItemSearch.aspx")
                     .queryParam("ttbkey", apiKey)
-                    .queryParam("Query", URLEncoder.encode(query, StandardCharsets.UTF_8))
+                    .queryParam("Query", query)
                     .queryParam("QueryType", "Title")
                     .queryParam("MaxResults", 10)
+                    .queryParam("start", 1)
+                    .queryParam("SearchTarget", "Book")
                     .queryParam("output", "js")
+                    .queryParam("Version", "20131101")
                     .build()
                     .toUriString();
 

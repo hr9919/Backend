@@ -13,6 +13,8 @@ public interface ReadingLogRepository extends JpaRepository<ReadingLog, Long> {
 
     List<ReadingLog> findByUser(User user);
 
+    void deleteByUser(User user);
+
     @Query("SELECT COALESCE(SUM(r.pagesRead), 0) FROM ReadingLog r WHERE r.user = :user")
     int sumPagesByUser(@Param("user") User user);
 

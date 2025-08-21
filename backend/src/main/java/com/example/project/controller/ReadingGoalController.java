@@ -1,8 +1,8 @@
 package com.example.project.controller;
 
 import com.example.project.dto.ReadingGoalDto;
-import com.example.project.entity.ReadingGoal;
 import com.example.project.service.ReadingGoalService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +57,7 @@ public class ReadingGoalController {
         return ResponseEntity.ok(goalService.addReadingTime(id, request.getMinutes()));
     }
 
-    // 요청 DTO
-    @lombok.Data
+    @Data
     public static class AddTimeRequest {
         private int minutes;
     }

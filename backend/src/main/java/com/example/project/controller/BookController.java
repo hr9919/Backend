@@ -5,32 +5,33 @@ import com.example.project.entity.Book;
 import com.example.project.service.AladinService;
 import com.example.project.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
 
-    private final AladinService aladinService;
     private final BookService bookService;
+    private final AladinService aladinService;
 
-    @GetMapping("/search")
-    public List<BookDto> searchBooks(@RequestParam String query) {
-        return aladinService.searchBooks(query);
+    @PostMapping
+    public ResponseEntity<Book> saveBook(@RequestBody BookDto dto) {
+        Book savedBook = bookService.saveBook(dto);
+        return ResponseEntity.ok(savedBook);
     }
 
-    @PostMapping("/import")
-    public BookDto importBook(@RequestParam String query, @RequestParam String isbn13) {
-        List<BookDto> results = aladinService.searchBooks(query);
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBook(@PathVariable Long id) {
+        Book book = bookService.findById(id);
+        return ResponseEntity.ok(book);
+    }
 
-        return results.stream()
-                .filter(book -> book.getIsbn13().equals(isbn13))
-                .findFirst()
-                .map(bookService::saveFromDto)
-                .map(BookDto::new)
-                .orElseThrow(() -> new RuntimeException("ÇØ´ç ISBN13ÀÇ Ã¥À» Ã£À» ¼ö ¾ø½À´Ï´Ù."));
+    @GetMapping("/search")
+    public ResponseEntity<List<BookDto>> searchBooks(@RequestParam String keyword) {
+        return ResponseEntity.ok(aladinService.searchBooks(keyword));
     }
 }

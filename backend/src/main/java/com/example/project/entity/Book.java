@@ -1,7 +1,12 @@
 package com.example.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -9,15 +14,18 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "books")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "book_id")
     private Long id;
 
     private String title;
     private String author;
-    private String publisher; // 추가
+    private String publisher;
     private String pubDate;
     private String isbn;
     private String isbn13;
@@ -25,5 +33,9 @@ public class Book {
     private String link;
     private String categoryName;
     private int itemPage;
-}
 
+    @Builder.Default
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ReadingLog> readingLogs = new ArrayList<>();
+}

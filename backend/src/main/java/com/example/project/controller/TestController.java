@@ -1,36 +1,36 @@
 package com.example.project.controller;
 
-import com.example.project.dto.LoginRequest;
-import com.example.project.dto.LoginResponse;
 import com.example.project.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/test")
+@RequiredArgsConstructor
 public class TestController {
 
     private final JwtUtil jwtUtil;
 
-    public TestController(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    @PostMapping("/token")
+    public String generateToken(@RequestBody TestRequest request) {
+        Long userId = Long.parseLong(request.getId());
+        return jwtUtil.generateToken(userId);
     }
 
-    @PostMapping("/auth/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
-        if (request.getUsername().equals(request.getPassword())) {
-            String token = jwtUtil.generateToken(request.getUsername());
-            return new LoginResponse(token);
-        }
-        throw new RuntimeException("Invalid credentials");
+    @GetMapping("/validate")
+    public String validateToken(@RequestParam String token) {
+        Long userId = jwtUtil.validateToken(token);
+        return "UserId: " + userId;
     }
+}
 
-    @GetMapping("/api/data")
-    public String getData() {
-        return "Protected Data Access Success!";
+class TestRequest {
+    private String userId;
+
+    public String getId() {
+        return userId;
     }
-
-    @GetMapping("/test/ping")
-    public String ping() {
-        return "pong";
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

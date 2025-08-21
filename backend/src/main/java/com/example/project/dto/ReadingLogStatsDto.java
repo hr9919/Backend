@@ -22,7 +22,7 @@ public class ReadingLogStatsDto {
     }
 
     // Getter / Setter
-    public Long getUserId() { return userId; }
+    public Long getId() { return userId; }
     public int getTotalPages() { return totalPages; }
     public int getTotalMinutes() { return totalMinutes; }
     public int getCompletedBooks() { return completedBooks; }
