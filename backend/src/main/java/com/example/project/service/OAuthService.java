@@ -1,5 +1,6 @@
 package com.example.project.service;
 
+import com.example.project.dto.AuthResponse;
 import com.example.project.dto.UserDto;
 import com.example.project.entity.User;
 import com.example.project.enums.SocialLoginType;
@@ -17,7 +18,7 @@ import java.util.*;
 public class OAuthService {
 
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil; // 추가
+    private final JwtUtil jwtUtil;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
@@ -39,16 +40,17 @@ public class OAuthService {
         throw new IllegalArgumentException("Unsupported social login type: " + socialLoginType);
     }
 
-    public UserDto handleCallback(SocialLoginType socialLoginType, String code) {
+    public AuthResponse handleCallback(SocialLoginType socialLoginType, String code) {
         if (socialLoginType == SocialLoginType.GOOGLE) {
             return handleGoogleCallback(code);
         }
         throw new IllegalArgumentException("Unsupported social login type: " + socialLoginType);
     }
 
-    private UserDto handleGoogleCallback(String code) {
+    private AuthResponse handleGoogleCallback(String code) {
         RestTemplate restTemplate = new RestTemplate();
 
+        // 1. 구글 OAuth 토큰 요청
         Map<String, String> tokenRequest = new HashMap<>();
         tokenRequest.put("code", code);
         tokenRequest.put("client_id", googleClientId);
@@ -61,14 +63,18 @@ public class OAuthService {
 
         String accessToken = (String) tokenResponse.get("access_token");
 
+        // 2. 사용자 정보 요청
         Map<String, Object> userInfo = restTemplate.getForObject(
-                "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken, Map.class);
+                "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken,
+                Map.class
+        );
 
         String email = (String) userInfo.get("email");
         String name = (String) userInfo.get("name");
         String picture = (String) userInfo.get("picture");
         String googleId = (String) userInfo.get("id");
 
+        // 3. 사용자 조회/등록
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
@@ -104,15 +110,13 @@ public class OAuthService {
 
         user = userRepository.save(user);
 
+        // 4. JWT 발급
         String jwt = jwtUtil.generateToken(user.getId());
 
-        return new UserDto(
-                user.getId(),
-                user.getNickname(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getSocialProviders(),
-                jwt  // 여기서 JWT 내려줌
-        );
+        // 5. UserDto + JWT 반환
+        return AuthResponse.builder()
+                .user(UserDto.from(user))
+                .token(jwt)
+                .build();
     }
 }

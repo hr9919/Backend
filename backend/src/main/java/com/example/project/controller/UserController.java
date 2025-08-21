@@ -1,5 +1,6 @@
 package com.example.project.controller;
 
+import com.example.project.dto.UserDto;
 import com.example.project.dto.UserCreateRequest;
 import com.example.project.entity.User;
 import com.example.project.service.UserService;
@@ -17,18 +18,20 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getAllUsers().stream()
+                .map(UserDto::from)
+                .toList();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        User user = userService.findById(id);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(UserDto.from(userService.findById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<UserDto> createUser(@RequestBody UserCreateRequest request) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setNickname(request.getNickname());
@@ -37,11 +40,11 @@ public class UserController {
         user.setBio(request.getBio());
         user.setTagId(request.getTagId());
 
-        return ResponseEntity.ok(userService.createUser(user));
+        return ResponseEntity.ok(UserDto.from(userService.createUser(user)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserCreateRequest request) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserCreateRequest request) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setNickname(request.getNickname());
@@ -50,7 +53,7 @@ public class UserController {
         user.setBio(request.getBio());
         user.setTagId(request.getTagId());
 
-        return ResponseEntity.ok(userService.updateUser(id, user));
+        return ResponseEntity.ok(UserDto.from(userService.updateUser(id, user)));
     }
 
     @DeleteMapping("/{id}")

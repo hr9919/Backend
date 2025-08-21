@@ -4,6 +4,7 @@ import com.example.project.entity.Follow;
 import com.example.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,9 +21,16 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     List<Follow> findByFollower(User follower);
     List<Follow> findByFollowing(User following);
 
-    // 추가: 특정 사용자가 팔로우한 모든 관계 삭제
+    // 특정 사용자가 팔로우한 모든 관계 삭제
     void deleteByFollower(User follower);
 
-    // 추가: 특정 사용자를 팔로우하는 모든 관계 삭제
+    // 특정 사용자를 팔로우하는 모든 관계 삭제
     void deleteByFollowing(User following);
+
+    // ID 기반 삭제 (UserService에서 사용 가능)
+    @Transactional
+    void deleteByFollowerId(Long followerId);
+
+    @Transactional
+    void deleteByFollowingId(Long followingId);
 }

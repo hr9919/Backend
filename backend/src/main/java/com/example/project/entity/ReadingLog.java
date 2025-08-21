@@ -1,9 +1,6 @@
 package com.example.project.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -14,29 +11,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Table(name = "reading_logs")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ReadingLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_id")
-    private Long id;
-
-    private int pagesRead;
-    private int minutesRead;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime readAt;
+    private Long id;   // PK (JSON에도 id로 노출됨)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    @JsonBackReference
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false, referencedColumnName = "book_id")
     private Book book;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonBackReference
-    private User user;
+    @Column(name = "pages_read")
+    private int pagesRead;
+
+    @Column(name = "minutes_read")
+    private int minutesRead;
+
+    @Column(name = "read_at")
+    private LocalDateTime readAt = LocalDateTime.now();
 }

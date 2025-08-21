@@ -1,54 +1,57 @@
 package com.example.project.controller;
 
+import com.example.project.common.ApiResponse;
 import com.example.project.dto.ReadingLogDto;
-import com.example.project.entity.Book;
-import com.example.project.entity.ReadingLog;
-import com.example.project.entity.User;
-import com.example.project.service.BookService;
+import com.example.project.dto.ReadingLogStatsDto;
 import com.example.project.service.ReadingLogService;
-import com.example.project.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users/{userId}/logs")
 @RequiredArgsConstructor
 public class ReadingLogController {
 
-    private final UserService userService;
-    private final BookService bookService;
     private final ReadingLogService logService;
 
-    @PostMapping("/{userId}/books/{bookId}/logs")
-    public ResponseEntity<ReadingLogDto> createOrUpdateLog(
+    // 생성
+    @PostMapping
+    public ResponseEntity<ApiResponse<ReadingLogDto>> createLog(
             @PathVariable Long userId,
-            @PathVariable Long bookId,
             @RequestBody ReadingLogDto dto) {
-
-        User user = userService.findById(userId);
-        Book book = bookService.findById(bookId);
-        ReadingLog log = dto.toEntity(user, book);
-        ReadingLog savedLog = logService.addOrUpdateReadingLog(user, book, log);
-
-        return ResponseEntity.ok(new ReadingLogDto(savedLog));
+        return ResponseEntity.ok(ApiResponse.success(logService.create(userId, dto)));
     }
 
-    @GetMapping("/{userId}/logs")
-    public ResponseEntity<List<ReadingLogDto>> getLogsByUser(@PathVariable Long userId) {
-        User user = userService.findById(userId);
-        List<ReadingLogDto> logs = logService.getLogsByUser(user)
-                .stream()
-                .map(ReadingLogDto::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(logs);
+    // 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ReadingLogDto>>> getLogs(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(logService.getByUser(userId)));
     }
 
-    @GetMapping("/{userId}/logs/stats")
-    public ResponseEntity<?> getReadingStats(@PathVariable Long userId) {
-        User user = userService.findById(userId);
-        return ResponseEntity.ok(logService.getReadingStats(user));
+    // 수정
+    @PutMapping("/{logId}")
+    public ResponseEntity<ApiResponse<ReadingLogDto>> updateLog(
+            @PathVariable Long userId,
+            @PathVariable Long logId,
+            @RequestBody ReadingLogDto dto) {
+        return ResponseEntity.ok(ApiResponse.success(logService.update(userId, logId, dto)));
+    }
+
+    // 삭제
+    @DeleteMapping("/{logId}")
+    public ResponseEntity<ApiResponse<Void>> deleteLog(
+            @PathVariable Long userId,
+            @PathVariable Long logId) {
+        logService.delete(userId, logId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    // 통계
+    @GetMapping("/stats")
+    public ResponseEntity<ApiResponse<ReadingLogStatsDto>> getStats(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(logService.getStats(userId)));
     }
 }

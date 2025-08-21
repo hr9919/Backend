@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ReadingLogDto {
 
     private Long id;
@@ -18,22 +19,14 @@ public class ReadingLogDto {
     private int minutesRead;
     private LocalDateTime readAt;
 
-    public ReadingLog toEntity(com.example.project.entity.User user, com.example.project.entity.Book book) {
-        return ReadingLog.builder()
-                .user(user)
-                .book(book)
-                .pagesRead(this.pagesRead)
-                .minutesRead(this.minutesRead)
-                .readAt(this.readAt != null ? this.readAt : LocalDateTime.now())
+    public static ReadingLogDto fromEntity(ReadingLog log) {
+        return ReadingLogDto.builder()
+                .id(log.getId())
+                .userId(log.getUser().getId())
+                .bookId(log.getBook().getId())
+                .pagesRead(log.getPagesRead())
+                .minutesRead(log.getMinutesRead())
+                .readAt(log.getReadAt())
                 .build();
-    }
-
-    public ReadingLogDto(ReadingLog log) {
-        this.id = log.getId();
-        this.userId = log.getUser().getId();
-        this.bookId = log.getBook().getId();
-        this.pagesRead = log.getPagesRead();
-        this.minutesRead = log.getMinutesRead();
-        this.readAt = log.getReadAt();
     }
 }
