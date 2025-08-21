@@ -67,6 +67,6 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @RequestParam Long userId) {
         reviewService.delete(reviewId, userId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 }

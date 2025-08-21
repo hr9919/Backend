@@ -70,7 +70,10 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewDto> getByUser(Long userId) {
-        return reviewRepository.findByUser_Id(userId)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        return reviewRepository.findByUser(user)
                 .stream()
                 .map(ReviewDto::from)
                 .collect(Collectors.toList());
@@ -78,7 +81,10 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewDto> getByBook(Long bookId) {
-        return reviewRepository.findByBook_Id(bookId)
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("책을 찾을 수 없습니다."));
+
+        return reviewRepository.findByBook(book)
                 .stream()
                 .map(ReviewDto::from)
                 .collect(Collectors.toList());

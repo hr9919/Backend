@@ -17,12 +17,13 @@ public class ReadingLogController {
 
     private final ReadingLogService logService;
 
-    // 생성
-    @PostMapping
+    // 생성 (bookId 필요)
+    @PostMapping("/books/{bookId}")
     public ResponseEntity<ApiResponse<ReadingLogDto>> createLog(
             @PathVariable Long userId,
+            @PathVariable Long bookId,
             @RequestBody ReadingLogDto dto) {
-        return ResponseEntity.ok(ApiResponse.success(logService.create(userId, dto)));
+        return ResponseEntity.ok(ApiResponse.success(logService.create(userId, bookId, dto)));
     }
 
     // 조회
@@ -37,16 +38,16 @@ public class ReadingLogController {
             @PathVariable Long userId,
             @PathVariable Long logId,
             @RequestBody ReadingLogDto dto) {
-        return ResponseEntity.ok(ApiResponse.success(logService.update(userId, logId, dto)));
+        return ResponseEntity.ok(ApiResponse.success(logService.update(logId, dto)));
     }
 
-    // 삭제
+    // 삭제 (userId와 logId 같이 전달)
     @DeleteMapping("/{logId}")
-    public ResponseEntity<ApiResponse<Void>> deleteLog(
+    public ResponseEntity<Void> deleteLog(
             @PathVariable Long userId,
             @PathVariable Long logId) {
         logService.delete(userId, logId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build(); // 204
     }
 
     // 통계

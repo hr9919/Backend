@@ -17,27 +17,27 @@ public class LikeController {
     public ResponseEntity<ApiResponse<Void>> likeReview(@PathVariable Long reviewId,
                                                         @RequestParam Long userId) {
         likeService.likeReview(reviewId, userId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<ApiResponse<Void>> unlikeReview(@PathVariable Long reviewId,
                                                           @RequestParam Long userId) {
         likeService.unlikeReview(reviewId, userId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> likeComment(@PathVariable Long commentId,
                                                          @RequestParam Long userId) {
         likeService.likeComment(commentId, userId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> unlikeComment(@PathVariable Long commentId,
                                                            @RequestParam Long userId) {
         likeService.unlikeComment(commentId, userId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 }

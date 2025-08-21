@@ -24,14 +24,11 @@ public class ReadingLogService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
 
-    /**
-     * 독서 기록 생성
-     */
     @Transactional
-    public ReadingLogDto create(Long userId, ReadingLogDto dto) {
+    public ReadingLogDto create(Long userId, Long bookId, ReadingLogDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        Book book = bookRepository.findById(dto.getBookId())
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("책을 찾을 수 없습니다."));
 
         ReadingLog log = ReadingLog.builder()
@@ -45,9 +42,6 @@ public class ReadingLogService {
         return ReadingLogDto.fromEntity(logRepository.save(log));
     }
 
-    /**
-     * 특정 사용자 독서 기록 전체 조회
-     */
     @Transactional(readOnly = true)
     public List<ReadingLogDto> getByUser(Long userId) {
         User user = userRepository.findById(userId)
@@ -58,18 +52,10 @@ public class ReadingLogService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 독서 기록 수정
-     */
     @Transactional
-    public ReadingLogDto update(Long userId, Long logId, ReadingLogDto dto) {
+    public ReadingLogDto update(Long logId, ReadingLogDto dto) {
         ReadingLog log = logRepository.findById(logId)
                 .orElseThrow(() -> new RuntimeException("독서 기록을 찾을 수 없습니다."));
-
-        // 본인 기록만 수정 가능
-        if (!log.getUser().getId().equals(userId)) {
-            throw new RuntimeException("해당 사용자의 기록이 아닙니다. 수정 불가.");
-        }
 
         log.setPagesRead(dto.getPagesRead());
         log.setMinutesRead(dto.getMinutesRead());
@@ -78,25 +64,18 @@ public class ReadingLogService {
         return ReadingLogDto.fromEntity(logRepository.save(log));
     }
 
-    /**
-     * 독서 기록 삭제
-     */
     @Transactional
     public void delete(Long userId, Long logId) {
         ReadingLog log = logRepository.findById(logId)
                 .orElseThrow(() -> new RuntimeException("독서 기록을 찾을 수 없습니다. ID=" + logId));
 
-        // 본인 기록만 삭제 가능
         if (!log.getUser().getId().equals(userId)) {
-            throw new RuntimeException("해당 사용자의 기록이 아닙니다. 삭제 불가.");
+            throw new RuntimeException("권한이 없습니다.");
         }
 
         logRepository.delete(log);
     }
 
-    /**
-     * 독서 기록 통계
-     */
     @Transactional(readOnly = true)
     public ReadingLogStatsDto getStats(Long userId) {
         User user = userRepository.findById(userId)

@@ -48,7 +48,7 @@ public class CommentController {
             @RequestParam Long userId) {
 
         commentService.delete(commentId, userId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 
     // 특정 리뷰의 댓글 조회

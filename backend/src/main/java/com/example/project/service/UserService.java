@@ -3,8 +3,7 @@ package com.example.project.service;
 import com.example.project.entity.User;
 import com.example.project.enums.SocialLoginType;
 import com.example.project.exception.UserNotFoundException;
-import com.example.project.repository.FollowRepository;
-import com.example.project.repository.UserRepository;
+import com.example.project.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final ReadingLogRepository readingLogRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReadingGoalRepository readingGoalRepository;
 
     @Transactional
     public User loginOrRegister(String email, String nickname, String username, SocialLoginType type) {
@@ -67,11 +69,12 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID=" + id));
 
-        // 팔로우 관계 삭제
-        followRepository.deleteByFollowerId(user.getId());
-        followRepository.deleteByFollowingId(user.getId());
+        followRepository.deleteByFollower(user);
+        followRepository.deleteByFollowing(user);
+        readingLogRepository.deleteByUser(user);
+        reviewRepository.deleteByUser(user);
+        readingGoalRepository.deleteByUser(user);
 
-        // 유저 삭제
         userRepository.delete(user);
     }
 }

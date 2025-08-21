@@ -18,18 +18,18 @@ public class FollowController {
 
     // 팔로우
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> follow(@RequestParam Long followerId,
-                                                    @RequestParam Long followingId) {
-        followService.follow(followerId, followingId);
-        return ResponseEntity.ok(ApiResponse.success(null));
-    }
+public ResponseEntity<ApiResponse<String>> follow(@RequestParam Long followerId,
+                                                  @RequestParam Long followingId) {
+    followService.follow(followerId, followingId);
+    return ResponseEntity.ok(ApiResponse.success("Followed successfully"));
+}
 
     // 언팔로우
     @DeleteMapping
     public ResponseEntity<ApiResponse<Void>> unfollow(@RequestParam Long followerId,
                                                       @RequestParam Long followingId) {
         followService.unfollow(followerId, followingId);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.noContent().build();
     }
 
     // 팔로워 조회
