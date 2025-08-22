@@ -1,0 +1,13 @@
+package com.example.project.repository;
+
+import com.example.project.entity.Group;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface GroupRepository extends JpaRepository<Group, Long> {
+    List<Group> findByNameContainingIgnoreCase(String name);
+    List<Group> findByCategory(String category);
+}

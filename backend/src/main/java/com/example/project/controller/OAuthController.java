@@ -6,6 +6,7 @@ import com.example.project.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/auth")
@@ -16,8 +17,9 @@ public class OAuthController {
 
     // Redirect URL 반환
     @GetMapping("/{socialLoginType}")
-    public ResponseEntity<String> redirect(@PathVariable SocialLoginType socialLoginType) {
-        return ResponseEntity.ok(oAuthService.getRedirectUrl(socialLoginType));
+    public RedirectView redirect(@PathVariable SocialLoginType socialLoginType) {
+        String redirectUrl = oAuthService.getRedirectUrl(socialLoginType);
+        return new RedirectView(redirectUrl);
     }
 
     // Callback 처리 (JWT 발급 + 유저 정보 반환)
