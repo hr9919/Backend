@@ -2,7 +2,6 @@ package com.example.project.dto;
 
 import com.example.project.entity.ReadingGoal;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @Getter

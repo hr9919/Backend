@@ -1,6 +1,7 @@
 package com.example.project.controller;
 
 import com.example.project.common.ApiResponse;
+import com.example.project.dto.UserDto;
 import com.example.project.entity.User;
 import com.example.project.repository.UserRepository;
 import lombok.Data;
@@ -21,17 +22,9 @@ public class ProfileController {
     private final UserRepository userRepository;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> get(@PathVariable Long userId) {
-        User u = userRepository.findById(userId).orElseThrow();
-        Map<String, Object> body = new HashMap<>();
-        body.put("userId", u.getId());              // getId() → getId()
-        body.put("email", u.getEmail());
-        body.put("nickname", u.getNickname());
-        body.put("tagId", u.getTagId());
-        body.put("profileImage", u.getProfileImage());
-        body.put("bio", u.getBio());
-        body.put("createdAt", u.getCreatedAt());
-        return ResponseEntity.ok(ApiResponse.success(body));
+    public ResponseEntity<ApiResponse<UserDto>> get(@PathVariable Long userId) {
+        User u = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(ApiResponse.success(UserDto.from(u)));
     }
 
     @PutMapping("/{userId}")
