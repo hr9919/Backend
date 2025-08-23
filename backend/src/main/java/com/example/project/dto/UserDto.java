@@ -1,7 +1,7 @@
 package com.example.project.dto;
 
 import com.example.project.entity.User;
-import com.example.project.entity.Badge; // Badge 엔티티 import
+import com.example.project.entity.Badge; 
 import lombok.*;
 
 import java.util.List;
@@ -21,17 +21,18 @@ public class UserDto {
     private String bio;
     private String tagId;
     
-    // 새로 추가된 필드
     private int level;
     private int experience;
-    private List<BadgeDto> badges; // BadgeDto 목록
+    private List<BadgeDto> badges;
 
     private int followerCount;
     private int followingCount;
     private int reviewCount;
 
+    private List<BookDto> recentBooks;
+    private List<ReviewDto> recentReviews;
+
     public static UserDto from(User user) {
-        // Badge 엔티티를 BadgeDto로 변환
         List<BadgeDto> badgeDtos = user.getBadges().stream()
                 .map(BadgeDto::from)
                 .collect(Collectors.toList());
@@ -44,9 +45,9 @@ public class UserDto {
                 .profileImage(user.getProfileImage())
                 .bio(user.getBio())
                 .tagId(user.getTagId())
-                .level(user.getLevel()) // 레벨 추가
-                .experience(user.getExperience()) // 경험치 추가
-                .badges(badgeDtos) // 배지 목록 추가
+                .level(user.getLevel())
+                .experience(user.getExperience())
+                .badges(badgeDtos)
                 .followerCount(user.getFollowers().size())
                 .followingCount(user.getFollowing().size())
                 .reviewCount(user.getReviews().size())

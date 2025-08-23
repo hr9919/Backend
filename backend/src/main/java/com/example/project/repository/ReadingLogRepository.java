@@ -2,6 +2,7 @@ package com.example.project.repository;
 
 import com.example.project.entity.ReadingLog;
 import com.example.project.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +34,6 @@ public interface ReadingLogRepository extends JpaRepository<ReadingLog, Long> {
     int sumPagesByUserAndPeriod(@Param("user") User user, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
     @Query("SELECT COALESCE(SUM(r.minutesRead), 0) FROM ReadingLog r WHERE r.user = :user AND r.readAt BETWEEN :start AND :end")
     int sumMinutesByUserAndPeriod(@Param("user") User user, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    
+    List<ReadingLog> findByUserOrderByReadAtDesc(User user, Pageable pageable);
 }

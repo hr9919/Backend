@@ -162,6 +162,7 @@ public class OAuthService {
         String tokenUri = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/token")
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", kakaoClientId)
+                .queryParam("client_secret", kakaoClientSecret)
                 .queryParam("redirect_uri", kakaoRedirectUri)
                 .queryParam("code", code)
                 .toUriString();
