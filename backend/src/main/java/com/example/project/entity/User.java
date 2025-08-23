@@ -37,12 +37,15 @@ public class User {
 
     @Column(name = "tag_id")
     private String tagId;
-    
+
     @Column(name = "level", nullable = false)
     private int level = 1;
 
     @Column(name = "experience", nullable = false)
     private int experience = 0;
+
+    @Column(name = "access_token")
+    private String accessToken;
 
     @Builder.Default
     @Column(name = "created_at", updatable = false)

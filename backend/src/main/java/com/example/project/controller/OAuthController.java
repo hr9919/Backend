@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class OAuthController {
 
     private final OAuthService oAuthService;
-
+    
     // Redirect URL 반환
     @GetMapping("/{socialLoginType}")
     public RedirectView redirect(@PathVariable SocialLoginType socialLoginType) {

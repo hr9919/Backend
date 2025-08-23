@@ -61,4 +61,11 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+    
+    // 인기 유저 추천 (새로 추가)
+    @GetMapping("/popular")
+    public ResponseEntity<List<UserDto>> getPopularUsers() {
+        List<UserDto> popularUsers = userService.getPopularUsers();
+        return ResponseEntity.ok(popularUsers);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.project.service;
 
+import com.example.project.dto.UserDto;
 import com.example.project.entity.User;
 import com.example.project.enums.SocialLoginType;
 import com.example.project.exception.UserNotFoundException;
@@ -7,8 +8,10 @@ import com.example.project.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +25,7 @@ public class UserService {
 
     @Transactional
     public User loginOrRegister(String email, String nickname, String username, SocialLoginType type) {
-        return userRepository.findByEmail(email)
-                .map(user -> {
-                    if (!user.getSocialProviders().contains(type.name())) {
-                        user.getSocialProviders().add(type.name());
-                    }
-                    return userRepository.save(user);
-                })
+        User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
@@ -38,6 +35,13 @@ public class UserService {
                     newUser.getSocialProviders().add(type.name());
                     return userRepository.save(newUser);
                 });
+
+        if (!user.getSocialProviders().contains(type.name())) {
+            user.getSocialProviders().add(type.name());
+            userRepository.save(user);
+        }
+        
+        return user;
     }
 
     public List<User> getAllUsers() {
@@ -51,7 +55,6 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-        // tagId 중복 검사 추가
         if (user.getTagId() != null && userRepository.findByTagId(user.getTagId()).isPresent()) {
             throw new RuntimeException("이미 사용 중인 tagId입니다.");
         }
@@ -61,14 +64,13 @@ public class UserService {
     @Transactional
     public User updateUser(Long id, User updatedUser) {
         User user = findById(id);
-
-        // tagId가 변경되었을 경우, 변경된 tagId가 이미 존재하는지 검사
+        
         if (updatedUser.getTagId() != null && !updatedUser.getTagId().equals(user.getTagId())) {
             if (userRepository.findByTagId(updatedUser.getTagId()).isPresent()) {
                 throw new RuntimeException("이미 사용 중인 tagId입니다.");
             }
         }
-
+        
         user.setEmail(updatedUser.getEmail());
         user.setNickname(updatedUser.getNickname());
         user.setUsername(updatedUser.getUsername());
@@ -80,13 +82,20 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID=" + id));
+        User user = findById(id);
         followRepository.deleteByFollower(user);
         followRepository.deleteByFollowing(user);
         readingLogRepository.deleteByUser(user);
         reviewRepository.deleteByUser(user);
         readingGoalRepository.deleteByUser(user);
         userRepository.delete(user);
+    }
+    
+    // 인기 유저 추천 로직 (팔로워 수 + 리뷰 수 기준)
+    public List<UserDto> getPopularUsers() {
+        return userRepository.findAll().stream()
+                .sorted(Comparator.comparingInt((User u) -> u.getFollowers().size() + u.getReviews().size()).reversed()) // ✅ User 타입 명시
+                .map(UserDto::from)
+                .collect(Collectors.toList());
     }
 }

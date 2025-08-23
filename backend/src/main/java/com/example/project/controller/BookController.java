@@ -42,9 +42,25 @@ public class BookController {
         return ResponseEntity.ok(BookDto.fromEntity(book));
     }
 
-    // 알라딘 API 책 검색
+    // 알라딘 API 책 검색 (기존)
     @GetMapping("/search")
     public ResponseEntity<List<BookDto>> searchBooks(@RequestParam String keyword) {
         return ResponseEntity.ok(aladinService.searchBooks(keyword));
+    }
+
+    // 인기 책 순위 조회 (새로 추가)
+    @GetMapping("/popular")
+    public ResponseEntity<List<BookDto>> getPopularBooks() {
+        List<BookDto> popularBooks = bookService.getPopularBooks();
+        return ResponseEntity.ok(popularBooks);
+    }
+
+    // 고도화된 책 검색 (새로 추가)
+    @GetMapping("/search-advanced")
+    public ResponseEntity<List<BookDto>> searchBooksAdvanced(
+        @RequestParam String keyword,
+        @RequestParam(required = false) String sort) {
+        List<BookDto> books = bookService.searchBooksAdvanced(keyword, sort);
+        return ResponseEntity.ok(books);
     }
 }
