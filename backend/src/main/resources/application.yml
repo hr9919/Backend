@@ -29,16 +29,16 @@ spring:
               - email
               - profile
           naver:
-            client-id: YOUR_NAVER_CLIENT_ID
-            client-secret: YOUR_NAVER_CLIENT_SECRET
+            client-id: aEES6oaOIyxTCs9ey0M6
+            client-secret: p9eYs1gD54
             redirect-uri: http://meltingbooks.o-r.kr:8080/auth/NAVER/callback
             authorization-grant-type: authorization_code
             scope:
               - email
               - profile
           kakao:
-            client-id: YOUR_KAKAO_CLIENT_ID
-            client-secret: YOUR_KAKAO_CLIENT_SECRET
+            client-id: 08682e37a5ef2a0e72ac68b22b3c03be
+            client-secret: fJ6aO6AS73wnLN5NSXTCkcbIwLKIH3q2
             redirect-uri: http://meltingbooks.o-r.kr:8080/auth/KAKAO/callback
             authorization-grant-type: authorization_code
             scope:

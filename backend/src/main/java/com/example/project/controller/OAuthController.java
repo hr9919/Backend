@@ -16,12 +16,14 @@ public class OAuthController {
 
     private final OAuthService oAuthService;
 
+    // Redirect URL 반환
     @GetMapping("/{socialLoginType}")
     public RedirectView redirect(@PathVariable SocialLoginType socialLoginType) {
         String redirectUrl = oAuthService.getRedirectUrl(socialLoginType);
         return new RedirectView(redirectUrl);
     }
 
+    // Callback 처리 (JWT 발급 후 앱으로 리디렉션)
     @GetMapping("/{socialLoginType}/callback")
     public RedirectView handleCallback(
             @PathVariable SocialLoginType socialLoginType,
@@ -29,7 +31,8 @@ public class OAuthController {
     ) {
         AuthResponse response = oAuthService.handleCallback(socialLoginType, code);
         
-        String clientAppUrl = "http://meltingbooks.o-r.kr:8080/auth/" + socialLoginType.name() + "/callback";
+        // 클라이언트 앱의 커스텀 URL 스킴으로 토큰과 유저 정보를 전달
+        String clientAppUrl = "meltingbooks://callback";
         String redirectUrl = UriComponentsBuilder.fromUriString(clientAppUrl)
                                 .queryParam("token", response.getToken())
                                 .queryParam("userId", response.getUser().getId())

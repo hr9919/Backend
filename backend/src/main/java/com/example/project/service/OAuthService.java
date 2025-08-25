@@ -114,7 +114,7 @@ public class OAuthService {
         String googleId = (String) userInfo.get("id");
 
         User user = loginOrRegister(email, nickname, email.split("@")[0], profileImage, googleId, SocialLoginType.GOOGLE);
-        String jwt = jwtUtil.generateToken(user.getId());
+        String jwt = jwtUtil.generateAccessToken(user.getId());
         user.setAccessToken(jwt);
         userRepository.save(user);
 
@@ -149,7 +149,7 @@ public class OAuthService {
         String profileImage = (String) userInfo.get("profile_image");
 
         User user = loginOrRegister(email, nickname, email.split("@")[0], profileImage, naverId, SocialLoginType.NAVER);
-        String jwt = jwtUtil.generateToken(user.getId());
+        String jwt = jwtUtil.generateAccessToken(user.getId());
         user.setAccessToken(jwt);
         userRepository.save(user);
 
@@ -186,7 +186,7 @@ public class OAuthService {
         String profileImage = (String) profile.get("profile_image_url");
 
         User user = loginOrRegister(email, nickname, email.split("@")[0], profileImage, kakaoId, SocialLoginType.KAKAO);
-        String jwt = jwtUtil.generateToken(user.getId());
+        String jwt = jwtUtil.generateAccessToken(user.getId());
         user.setAccessToken(jwt);
         userRepository.save(user);
 

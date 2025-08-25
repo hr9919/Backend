@@ -1,13 +1,15 @@
 package com.example.project.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
-    private UserDto user;
-    private String token;
+    private final UserDto user;
+    private final String token;
+    private final String refreshToken;
 }

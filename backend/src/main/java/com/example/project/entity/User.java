@@ -46,6 +46,9 @@ public class User {
 
     @Column(name = "access_token")
     private String accessToken;
+    
+    @Column(name = "refresh_token")
+    private String refreshToken; // 리프레시 토큰 필드 추가
 
     @Builder.Default
     @Column(name = "created_at", updatable = false)
