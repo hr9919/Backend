@@ -201,7 +201,7 @@ public class OAuthService {
             user.setEmail(email);
             user.setNickname(nickname);
             user.setUsername(username);
-            user.setProfileImage(profileImage);
+            user.setProfileImageUrl(profileImage);
             user.setSocialProviders(new ArrayList<>());
         }
         

@@ -3,6 +3,8 @@ package com.example.project.repository;
 import com.example.project.entity.Follow;
 import com.example.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,4 +35,8 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Transactional
     void deleteByFollowingId(Long followingId);
+
+    // 팔로잉 ID 리스트 조회
+    @Query("SELECT f.following.id FROM Follow f WHERE f.follower.id = :followerId")
+    List<Long> findFollowingIdsByFollowerId(@Param("followerId") Long followerId);
 }

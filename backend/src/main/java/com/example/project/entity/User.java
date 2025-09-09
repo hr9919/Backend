@@ -1,7 +1,6 @@
 package com.example.project.entity;
 
 import com.example.project.enums.SocialLoginType;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -17,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
@@ -29,8 +27,9 @@ public class User {
     private String nickname;
     private String username;
 
-    @Column(name = "profile_image")
-    private String profileImage;
+    // 프로필 이미지 URL
+    @Column(name = "profile_image_url", length = 512)
+    private String profileImageUrl;
 
     @Column(name = "bio")
     private String bio;
@@ -46,9 +45,9 @@ public class User {
 
     @Column(name = "access_token")
     private String accessToken;
-    
+
     @Column(name = "refresh_token")
-    private String refreshToken; // 리프레시 토큰 필드 추가
+    private String refreshToken;
 
     @Builder.Default
     @Column(name = "created_at", updatable = false)
@@ -66,7 +65,7 @@ public class User {
 
     @Column(name = "naver_id")
     private String naverId;
-    
+
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_social_providers", joinColumns = @JoinColumn(name = "user_id"))
@@ -87,7 +86,7 @@ public class User {
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Follow> followers = new ArrayList<>();
-    
+
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

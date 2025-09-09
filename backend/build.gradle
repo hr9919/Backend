@@ -42,6 +42,12 @@ dependencies {
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    
+    // Oracle Cloud OCI SDK - Object Storage
+    implementation 'com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.43.0'
+    implementation 'com.oracle.oci.sdk:oci-java-sdk-common:3.43.0'
+    implementation 'com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey:3.43.0'
+
 }
 
 tasks.named('test') {

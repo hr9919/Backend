@@ -30,7 +30,7 @@ public class BookController {
     @GetMapping
     public ResponseEntity<List<BookDto>> getAllBooks() {
         List<BookDto> books = bookService.findAll().stream()
-                .map(BookDto::fromEntity)
+                .map(BookDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(books);
     }
@@ -39,7 +39,7 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
         Book book = bookService.findById(id);
-        return ResponseEntity.ok(BookDto.fromEntity(book));
+        return ResponseEntity.ok(BookDto.from(book));
     }
 
     // 알라딘 API 책 검색 (기존)

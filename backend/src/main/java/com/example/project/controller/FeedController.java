@@ -17,11 +17,12 @@ public class FeedController {
     private final FeedService feedService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<FeedDto>>> getFeed(@RequestParam Long userId,
-                                                              @RequestParam(defaultValue = "0") int page,
-                                                              @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(ApiResponse.success(
-                feedService.getFeed(userId, page, size)
-        ));
+    public ResponseEntity<ApiResponse<List<FeedDto>>> getFeed(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        List<FeedDto> feedList = feedService.getFeed(userId, page, size);
+        return ResponseEntity.ok(ApiResponse.success(feedList));
     }
 }

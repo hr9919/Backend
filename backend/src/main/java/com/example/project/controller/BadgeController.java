@@ -15,14 +15,14 @@ public class BadgeController {
 
     // 첫 완독 배지 지급 API
     @PostMapping("/check-first-book")
-    public ResponseEntity<ApiResponse<Void>> checkFirstBookBadge(@RequestAttribute Long userId) {
+    public ResponseEntity<ApiResponse<Void>> checkFirstBookBadge(@RequestParam Long userId) {
         badgeService.checkFirstBookBadge(userId);
         return ResponseEntity.noContent().build();
     }
     
     // 감상문 마스터 배지 지급 API
     @PostMapping("/check-master-badge")
-    public ResponseEntity<ApiResponse<Void>> checkMasterBadge(@RequestAttribute Long userId) {
+    public ResponseEntity<ApiResponse<Void>> checkMasterBadge(@RequestParam Long userId) {
         badgeService.checkMasterBadge(userId);
         return ResponseEntity.noContent().build();
     }

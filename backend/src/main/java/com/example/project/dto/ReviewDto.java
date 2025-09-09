@@ -2,6 +2,8 @@ package com.example.project.dto;
 
 import com.example.project.entity.Review;
 import lombok.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -9,21 +11,32 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReviewDto {
+
     private Long reviewId;
     private String content;
-    private String imageUrl;
+    private List<String> reviewImageUrls;
     private int rating;
     private Long userId;
     private Long bookId;
+    private String createdAt;
+    private String updatedAt;
+    private List<String> hashtags;
 
-    // Review 엔티티 → DTO 변환 메서드
     public static ReviewDto from(Review review) {
         return ReviewDto.builder()
-                .reviewId(review.getId())              // 수정: getReviewId() → getId()
+                .reviewId(review.getId())
                 .content(review.getContent())
-                .imageUrl(review.getImageUrl())
-                .userId(review.getUser().getId())      // User 엔티티의 PK
-                .bookId(review.getBook().getId())      // 수정: getBookId() → getId()
+                .reviewImageUrls(review.getReviewImageUrls())
+                .rating(review.getRating())
+                .userId(review.getUser().getId())
+                .bookId(review.getBook().getId())
+                .createdAt(review.getCreatedAt().toString())
+                .updatedAt(review.getUpdatedAt().toString())
+                .hashtags(review.getHashtags() != null
+                        ? review.getHashtags().stream()
+                                .map(rh -> rh.getHashtag().getTagText())
+                                .collect(Collectors.toList())
+                        : List.of())
                 .build();
     }
 }

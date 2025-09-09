@@ -1,7 +1,6 @@
 package com.example.project.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "reviews")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Review {
 
     @Id
@@ -26,8 +24,10 @@ public class Review {
 
     private String content;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @ElementCollection
+    @CollectionTable(name = "review_images", joinColumns = @JoinColumn(name = "review_id"))
+    @Column(name = "image_url", length = 512)
+    private List<String> reviewImageUrls = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "created_at", updatable = false)
@@ -56,4 +56,13 @@ public class Review {
     @Builder.Default
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewHashtag> hashtags = new ArrayList<>();
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

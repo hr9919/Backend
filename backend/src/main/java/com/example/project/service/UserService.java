@@ -74,7 +74,7 @@ public class UserService {
         user.setEmail(updatedUser.getEmail());
         user.setNickname(updatedUser.getNickname());
         user.setUsername(updatedUser.getUsername());
-        user.setProfileImage(updatedUser.getProfileImage());
+        user.setProfileImageUrl(updatedUser.getProfileImageUrl());
         user.setBio(updatedUser.getBio());
         user.setTagId(updatedUser.getTagId());
         return userRepository.save(user);

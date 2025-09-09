@@ -2,11 +2,14 @@ package com.example.project.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @Getter
 @Setter
 public class UpdateReviewRequest {
-    private String content;   // 수정할 리뷰 본문
-    private String imageUrl;  // 수정할 이미지 (선택)
-    private int rating;   // 수정할 평점 (선택)
+    private String content;
+    private int rating;
+    private List<String> hashtags;          // 해시태그
+    private List<MultipartFile> files;      // 이미지 파일
 }

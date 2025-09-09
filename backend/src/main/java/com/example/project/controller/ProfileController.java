@@ -16,9 +16,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,7 +34,7 @@ public class ProfileController {
         
         // 최근 읽은 책 (최신 독서 기록 3개)
         List<BookDto> recentBooks = readingLogRepository.findByUserOrderByReadAtDesc(u, PageRequest.of(0, 3)).stream()
-                .map(log -> BookDto.fromEntity(log.getBook()))
+                .map(log -> BookDto.from(log.getBook()))
                 .collect(Collectors.toList());
         
         // 최근 작성한 글 (최신 리뷰 3개)
@@ -58,7 +56,7 @@ public class ProfileController {
         safeSet(u, "nickname", req.getNickname());
         safeSet(u, "tagId", req.getTagId());
         safeSet(u, "bio", req.getBio());
-        safeSet(u, "profileImage", req.getProfileImage());
+        safeSet(u, "profileImageUrl", req.getProfileImageUrl()); // 필드명 통일
         userRepository.save(u);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -76,6 +74,6 @@ public class ProfileController {
         private String nickname;
         private String tagId;
         private String bio;
-        private String profileImage;
+        private String profileImageUrl; // 필드명 변경
     }
 }

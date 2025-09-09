@@ -36,7 +36,7 @@ public class BookService {
     public List<BookDto> getPopularBooks() {
         return bookRepository.findAll().stream()
                 .sorted(Comparator.comparingInt((Book b) -> b.getReviews().size()).reversed()) // ✅ Book 타입 명시
-                .map(BookDto::fromEntity)
+                .map(BookDto::from)
                 .collect(Collectors.toList());
     }
     
@@ -49,12 +49,12 @@ public class BookService {
         if ("popular".equals(sort)) {
             return books.stream()
                     .sorted(Comparator.comparingInt((Book b) -> b.getReviews().size()).reversed()) // ✅ Book 타입 명시
-                    .map(BookDto::fromEntity)
+                    .map(BookDto::from)
                     .collect(Collectors.toList());
         }
 
         return books.stream()
-                .map(BookDto::fromEntity)
+                .map(BookDto::from)
                 .collect(Collectors.toList());
     }
 }

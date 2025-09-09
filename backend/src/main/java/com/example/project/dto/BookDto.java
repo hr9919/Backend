@@ -23,6 +23,7 @@ public class BookDto {
     // 인기순 정렬을 위한 필드 추가
     private Integer popularityScore;
 
+    // Book 엔티티로 변환
     public Book toEntity() {
         return Book.builder()
                 .title(this.title)
@@ -38,7 +39,8 @@ public class BookDto {
                 .build();
     }
 
-    public static BookDto fromEntity(Book book) {
+    // Book 엔티티를 DTO로 변환
+    public static BookDto from(Book book) {
         return BookDto.builder()
                 .title(book.getTitle())
                 .author(book.getAuthor())
@@ -50,7 +52,7 @@ public class BookDto {
                 .link(book.getLink())
                 .categoryName(book.getCategoryName())
                 .itemPage(book.getItemPage())
-                .popularityScore(book.getReviews().size()) // 리뷰 수를 인기 점수로 사용
+                .popularityScore(book.getReviews() != null ? book.getReviews().size() : 0) // 리뷰 수를 인기 점수로 사용
                 .build();
     }
 }

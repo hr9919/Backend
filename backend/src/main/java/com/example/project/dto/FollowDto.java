@@ -9,13 +9,13 @@ import lombok.Data;
 public class FollowDto {
     private Long id;
     private String nickname;
-    private String profileImage;
+    private String profileImageUrl;
 
     public static FollowDto from(User user) {
         return new FollowDto(
                 user.getId(),
                 user.getNickname(),
-                user.getProfileImage()
+                user.getProfileImageUrl()
         );
     }
 }

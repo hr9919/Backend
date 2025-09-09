@@ -36,7 +36,7 @@ public class UserController {
         user.setEmail(request.getEmail());
         user.setNickname(request.getNickname());
         user.setUsername(request.getUsername());
-        user.setProfileImage(request.getProfileImage());
+        user.setProfileImageUrl(request.getProfileImageUrl());
         user.setBio(request.getBio());
         user.setTagId(request.getTagId());
 
@@ -49,7 +49,7 @@ public class UserController {
         user.setEmail(request.getEmail());
         user.setNickname(request.getNickname());
         user.setUsername(request.getUsername());
-        user.setProfileImage(request.getProfileImage());
+        user.setProfileImageUrl(request.getProfileImageUrl());
         user.setBio(request.getBio());
         user.setTagId(request.getTagId());
 

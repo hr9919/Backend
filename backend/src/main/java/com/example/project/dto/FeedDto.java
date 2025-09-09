@@ -2,6 +2,7 @@ package com.example.project.dto;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -9,8 +10,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class FeedDto {
-    private Long feedId;
-    private Long userId;
-    private String content;
-    private LocalDateTime createdAt;
+
+    private Long reviewId;                 // 리뷰 ID
+    private Long userId;                   // 작성자 ID
+    private String tagId;  
+    private String username;               // 작성자 닉네임
+    private String userProfileImage;       // 작성자 프로필 이미지 URL
+    private String content;                // 리뷰 내용
+    private int rating;                    // 별점
+    private List<String> reviewImageUrls;  // 리뷰 이미지 URL 리스트
+    private LocalDateTime createdAt;       // 작성 시간
+
+    private int likeCount;                 // 좋아요 수
+    private int commentCount;              // 댓글 수
+    private List<String> hashtags;   // 해시태그
+
+    // 책 정보
+    private Long bookId;
+    private String bookTitle;
 }
