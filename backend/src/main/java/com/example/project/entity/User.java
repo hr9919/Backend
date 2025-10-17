@@ -27,7 +27,6 @@ public class User {
     private String nickname;
     private String username;
 
-    // 프로필 이미지 URL
     @Column(name = "profile_image_url", length = 512)
     private String profileImageUrl;
 
@@ -68,7 +67,10 @@ public class User {
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_social_providers", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(
+            name = "user_social_providers",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
     private List<String> socialProviders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

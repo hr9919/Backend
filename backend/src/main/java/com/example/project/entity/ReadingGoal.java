@@ -65,19 +65,43 @@ public class ReadingGoal {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    public void updateProgress() {
-        bookProgress = (targetBooks > 0) ? ((double) completedBooks / targetBooks) * 100 : 0;
-        reviewProgress = (targetReviews > 0) ? ((double) completedReviews / targetReviews) * 100 : 0;
-        timeProgress = (targetMinutes > 0) ? ((double) completedMinutes / targetMinutes) * 100 : 0;
+    // (옵션) 동시성 안전을 위한 낙관적 락
+    // @Version
+    // private Long version;
 
-        if (bookProgress >= 100 && reviewProgress >= 100 && timeProgress >= 100) {
+    public void updateProgress() {
+        bookProgress   = pct(completedBooks,   targetBooks);
+        reviewProgress = pct(completedReviews, targetReviews);
+        timeProgress   = pct(completedMinutes, targetMinutes);
+
+        // 모두 100%면 종료일 스탬프
+        if (bookProgress >= 100.0 && reviewProgress >= 100.0 && timeProgress >= 100.0) {
             this.endDate = LocalDate.now();
         }
     }
 
-    public void completeBook() { this.completedBooks++; updateProgress(); }
-    public void completeReview() { this.completedReviews++; updateProgress(); }
-    public void addReadingTime(int minutes) { this.completedMinutes += minutes; updateProgress(); }
+    private double pct(int done, int target) {
+        if (target <= 0) return 0.0;
+        double p = ((double) done / (double) target) * 100.0;
+        if (p > 100.0) p = 100.0;
+        if (p < 0.0)   p = 0.0;
+        return p;
+    }
+
+    public void completeBook() {
+        this.completedBooks = Math.max(0, this.completedBooks + 1);
+        updateProgress();
+    }
+
+    public void completeReview() {
+        this.completedReviews = Math.max(0, this.completedReviews + 1);
+        updateProgress();
+    }
+
+    public void addReadingTime(int minutes) {
+        this.completedMinutes = Math.max(0, this.completedMinutes + Math.max(0, minutes));
+        updateProgress();
+    }
 
     public enum GoalType { MONTHLY, YEARLY }
 }

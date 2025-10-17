@@ -5,13 +5,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.example.project.entity.GroupLike;
-import com.example.project.entity.GroupComment;
+import java.util.Objects; 
+import java.util.stream.Collectors;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,8 +29,8 @@ public class GroupPost {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
+    @Column(name = "post_type")
     private PostType postType;
 
     private String title;
@@ -40,8 +38,8 @@ public class GroupPost {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupPostImage> images = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "created_at", updatable = false)
@@ -49,7 +47,27 @@ public class GroupPost {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    @Column(name = "is_pinned", nullable = false)
+    private boolean pinned = false;
+
+    @Column(name = "pinned_at")
+    private LocalDateTime pinnedAt;
     
+    @Transient
+public List<String> getImageUrlList() {
+    if (images == null) return List.of();
+    return images.stream()
+            .map(GroupPostImage::getImageUrl)
+            .filter(Objects::nonNull)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .distinct()
+            .collect(Collectors.toList());
+}
+
+
     @PrePersist
     @PreUpdate
     public void onUpdate() {
@@ -65,6 +83,9 @@ public class GroupPost {
     private List<GroupLike> likes = new ArrayList<>();
 
     public enum PostType {
-        DISCUSSION, REVIEW, GOAL_SHARING, NOTICE
+        REVIEW,
+        NOTICE,
+        GOAL_SHARE,
+        RECOMMENDED_BOOK
     }
 }

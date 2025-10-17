@@ -29,29 +29,40 @@ public class UserDto {
     private int followingCount;
     private int reviewCount;
 
-    private List<BookDto> recentBooks;      // 최근 읽은 책 3권
-    private List<ReviewDto> recentReviews;  // 최근 작성 리뷰 3개
+    // 최근 읽은 책 3권 / 최근 작성 리뷰 3개
+    private List<BookDto> recentBooks;
+    private List<ReviewDto> recentReviews;
 
+    // 사용자가 속한 그룹 이름 (최대 3개)
+    private List<String> groupNames;
+
+    /** 그룹 이름을 주입하지 않을 때 기본 변환 */
     public static UserDto from(User user) {
-        List<BadgeDto> badgeDtos = user.getBadges().stream()
-                .map(BadgeDto::from)
-                .collect(Collectors.toList());
+        return from(user, List.of());
+    }
 
-        // 최근 작성 리뷰 3개 (작성일 내림차순)
-        List<ReviewDto> recentReviews = user.getReviews().stream()
-                .sorted((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()))
-                .limit(3)
-                .map(ReviewDto::from)
-                .collect(Collectors.toList());
+    /** Service가 조회한 groupNames(최대 3개)를 주입하는 변환 */
+    public static UserDto from(User user, List<String> groupNames) {
+        List<BadgeDto> badgeDtos = user.getBadges() == null ? List.of() :
+                user.getBadges().stream()
+                        .map(BadgeDto::from)
+                        .collect(Collectors.toList());
 
-        // 최근 읽은 책 3권 (ReadingLog 기준 내림차순)
-        List<BookDto> recentBooks = user.getReadingLogs().stream()
-                .sorted((l1, l2) -> l2.getReadAt().compareTo(l1.getReadAt()))
-                .map(ReadingLog::getBook)
-                .distinct() // 같은 책 중복 제거
-                .limit(3)
-                .map(BookDto::from)
-                .collect(Collectors.toList());
+        List<ReviewDto> recentReviews = user.getReviews() == null ? List.of() :
+                user.getReviews().stream()
+                        .sorted((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt()))
+                        .limit(3)
+                        .map(ReviewDto::from)
+                        .collect(Collectors.toList());
+
+        List<BookDto> recentBooks = user.getReadingLogs() == null ? List.of() :
+                user.getReadingLogs().stream()
+                        .sorted((l1, l2) -> l2.getReadAt().compareTo(l1.getReadAt()))
+                        .map(ReadingLog::getBook)
+                        .distinct()
+                        .limit(3)
+                        .map(BookDto::from)
+                        .collect(Collectors.toList());
 
         return UserDto.builder()
                 .id(user.getId())
@@ -64,11 +75,12 @@ public class UserDto {
                 .level(user.getLevel())
                 .experience(user.getExperience())
                 .badges(badgeDtos)
-                .followerCount(user.getFollowers().size())
-                .followingCount(user.getFollowing().size())
-                .reviewCount(user.getReviews().size())
+                .followerCount(user.getFollowers() == null ? 0 : user.getFollowers().size())
+                .followingCount(user.getFollowing() == null ? 0 : user.getFollowing().size())
+                .reviewCount(user.getReviews() == null ? 0 : user.getReviews().size())
                 .recentBooks(recentBooks)
                 .recentReviews(recentReviews)
+                .groupNames(groupNames == null ? List.of() : groupNames)
                 .build();
     }
 }

@@ -5,13 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReadingLogDto {
-
     private Long id;
     private Long userId;
     private Long bookId;
@@ -19,14 +14,19 @@ public class ReadingLogDto {
     private int minutesRead;
     private LocalDateTime readAt;
 
-    public static ReadingLogDto fromEntity(ReadingLog log) {
-        return ReadingLogDto.builder()
-                .id(log.getId())
-                .userId(log.getUser().getId())
-                .bookId(log.getBook().getId())
-                .pagesRead(log.getPagesRead())
-                .minutesRead(log.getMinutesRead())
-                .readAt(log.getReadAt())
-                .build();
-    }
+    /** ✅ 완독 여부(요청/응답 둘 다에서 사용) */
+    private Boolean isFinished;
+
+    public static ReadingLogDto fromEntity(ReadingLog e) {
+    return ReadingLogDto.builder()
+            .id(e.getId())
+            .userId(e.getUser() != null ? e.getUser().getId() : null)
+            .bookId(e.getBook() != null ? e.getBook().getId() : null)
+            .pagesRead(e.getPagesRead())
+            .minutesRead(e.getMinutesRead())
+            .readAt(e.getReadAt())
+            .isFinished(e.isFinished())
+            .build();
 }
+}
+

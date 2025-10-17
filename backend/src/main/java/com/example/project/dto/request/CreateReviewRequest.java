@@ -2,12 +2,17 @@ package com.example.project.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-@Getter
-@Setter
+import java.util.List;
+
+@Getter @Setter
 public class CreateReviewRequest {
-    private Long bookId;      // 어떤 책에 대한 리뷰인지
-    private String content;   // 리뷰 본문
-    private String imageUrl;  // 첨부 이미지 (선택)
-    private int rating;   // 평점 (선택, 1~5 정도)
+    private Long bookId;                 // 선택
+    private String content;              // 필수
+    private Integer rating;              // 선택 (null 허용)
+    private List<String> hashtags;       // 선택 ["#소설", "추천"]
+    private String imageUrl;             // (이전 호환) 단일 URL - 유지
+    private List<String> imageUrls;      // 선택: 여러 URL
+    private List<MultipartFile> files;   // 선택: 업로드 파일
 }

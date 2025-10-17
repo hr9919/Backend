@@ -9,19 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 @Table(name = "reviews")
 public class Review {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
 
+    @Lob
+    @Column(nullable = false)
     private String content;
 
     @ElementCollection
@@ -29,24 +27,22 @@ public class Review {
     @Column(name = "image_url", length = 512)
     private List<String> reviewImageUrls = new ArrayList<>();
 
-    @Builder.Default
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @Builder.Default
+    private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 
-    @Column(name = "rating", nullable = false)
-    private int rating = 0;
+    @Column(name = "rating")
+    private Integer rating;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", referencedColumnName = "book_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "book_id", referencedColumnName = "book_id", nullable = true)
     private Book book;
 
     @Builder.Default
@@ -60,6 +56,12 @@ public class Review {
     @Builder.Default
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewHashtag> hashtags = new ArrayList<>();
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+    }
 
     @PreUpdate
     public void onUpdate() {

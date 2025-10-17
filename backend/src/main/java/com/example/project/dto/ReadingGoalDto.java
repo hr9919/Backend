@@ -2,55 +2,82 @@ package com.example.project.dto;
 
 import com.example.project.entity.ReadingGoal;
 import lombok.*;
+
 import java.time.LocalDate;
+import java.util.List;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReadingGoalDto {
-
     private Long id;
     private Long userId;
+
     private ReadingGoal.GoalType goalType;
-    private int year;
-    private Integer month;
 
-    private int targetBooks;
-    private int completedBooks;
+    private Integer targetBooks;
+    private Integer completedBooks;
 
-    private int targetReviews;
-    private int completedReviews;
+    private Integer targetReviews;
+    private Integer completedReviews;
 
-    private int targetMinutes;
-    private int completedMinutes;
+    private Integer targetMinutes;
+    private Integer completedMinutes;
 
-    private double bookProgress;
-    private double reviewProgress;
-    private double timeProgress;
+    private Double bookProgress;
+    private Double reviewProgress;
+    private Double timeProgress;
 
     private LocalDate startDate;
     private LocalDate endDate;
+    private Integer year;
+    private Integer month;
 
-    public static ReadingGoalDto fromEntity(ReadingGoal goal) {
+    // ✅ 기간 내 완독한 책 목록
+    private List<BookBriefDto> books;
+
+    private String booksProgressText;
+    private String reviewsProgressText;
+    private String timeProgressText;
+
+    public static ReadingGoalDto fromEntity(ReadingGoal g) {
+        int tb = n(g.getTargetBooks());
+        int cb = n(g.getCompletedBooks());
+        int tr = n(g.getTargetReviews());
+        int cr = n(g.getCompletedReviews());
+        int tm = n(g.getTargetMinutes());
+        int cm = n(g.getCompletedMinutes());
+
         return ReadingGoalDto.builder()
-                .id(goal.getId())
-                .userId(goal.getUser().getId())
-                .goalType(goal.getGoalType())
-                .year(goal.getYear())
-                .month(goal.getMonth())
-                .targetBooks(goal.getTargetBooks())
-                .completedBooks(goal.getCompletedBooks())
-                .targetReviews(goal.getTargetReviews())
-                .completedReviews(goal.getCompletedReviews())
-                .targetMinutes(goal.getTargetMinutes())
-                .completedMinutes(goal.getCompletedMinutes())
-                .bookProgress(goal.getBookProgress())
-                .reviewProgress(goal.getReviewProgress())
-                .timeProgress(goal.getTimeProgress())
-                .startDate(goal.getStartDate())
-                .endDate(goal.getEndDate())
+                .id(g.getId())
+                .userId(g.getUser().getId())
+                .goalType(g.getGoalType())
+                .targetBooks(g.getTargetBooks())
+                .completedBooks(g.getCompletedBooks())
+                .targetReviews(g.getTargetReviews())
+                .completedReviews(g.getCompletedReviews())
+                .targetMinutes(g.getTargetMinutes())
+                .completedMinutes(g.getCompletedMinutes())
+                .bookProgress(g.getBookProgress())
+                .reviewProgress(g.getReviewProgress())
+                .timeProgress(g.getTimeProgress())
+                .startDate(g.getStartDate())
+                .endDate(g.getEndDate())
+                .year(g.getYear())
+                .month(g.getMonth())
+                // books는 서비스에서 채움
+                .books(null)
+                .booksProgressText(cb + "권/" + tb + "권")
+                .reviewsProgressText(cr + "개/" + tr + "개")
+                .timeProgressText(minutesToText(cm) + "/" + minutesToText(tm))
                 .build();
+    }
+
+    private static int n(Integer v) { return v == null ? 0 : v; }
+
+    private static String minutesToText(int m) {
+        int h = m / 60;
+        int mm = m % 60;
+        if (h > 0 && mm > 0) return h + "시간 " + mm + "분";
+        if (h > 0) return h + "시간";
+        return mm + "분";
     }
 }

@@ -6,7 +6,10 @@ import javax.persistence.*;
 @Entity
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
-@Table(name = "review_hashtags")
+@Table(
+  name = "review_hashtags",
+  uniqueConstraints = @UniqueConstraint(columnNames = {"review_id","hashtag_id"})
+)
 public class ReviewHashtag {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_hashtag_id")

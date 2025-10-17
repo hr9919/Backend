@@ -17,47 +17,48 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    // 댓글 생성
+    /** 댓글 생성 */
     @PostMapping
     public ResponseEntity<ApiResponse<CommentDto>> create(
-            @RequestParam Long userId,
+            @RequestAttribute Long userId,      // ������ 토큰에서 주입
             @RequestParam Long reviewId,
-            @RequestBody CommentUpdateRequest req) {
-
+            @RequestBody CommentUpdateRequest req
+    ) {
         return ResponseEntity.ok(ApiResponse.success(
                 commentService.create(userId, reviewId, req.getContent())
         ));
     }
 
-    // 댓글 수정
+    /** 댓글 수정 */
     @PutMapping("/{commentId}")
     public ResponseEntity<ApiResponse<CommentDto>> update(
             @PathVariable Long commentId,
-            @RequestParam Long userId,
-            @RequestBody CommentUpdateRequest req) {
-
+            @RequestAttribute Long userId,      // ������ 토큰에서 주입
+            @RequestBody CommentUpdateRequest req
+    ) {
         return ResponseEntity.ok(ApiResponse.success(
                 commentService.update(commentId, userId, req.getContent())
         ));
     }
 
-    // 댓글 삭제
+    /** 댓글 삭제 */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long commentId,
-            @RequestParam Long userId) {
-
+            @RequestAttribute Long userId       // ������ 토큰에서 주입
+    ) {
         commentService.delete(commentId, userId);
         return ResponseEntity.noContent().build();
     }
 
-    // 특정 리뷰의 댓글 조회
+    /** 특정 리뷰의 댓글 조회 (likedByMe 계산을 위해 현재 사용자 선택적 전달) */
     @GetMapping("/review/{reviewId}")
     public ResponseEntity<ApiResponse<List<CommentDto>>> getByReview(
-            @PathVariable Long reviewId) {
-
+            @PathVariable Long reviewId,
+            @RequestAttribute(required = false) Long userId // ������ 비로그인 허용
+    ) {
         return ResponseEntity.ok(ApiResponse.success(
-                commentService.getByReview(reviewId)
+                commentService.getByReview(reviewId, userId)
         ));
     }
 }

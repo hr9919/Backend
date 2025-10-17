@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,6 +19,8 @@ public class GroupDto {
     private int memberCount;
     private LocalDateTime createdAt;
 
+    private List<GroupMemberDto> members;
+
     public static GroupDto fromEntity(Group group, int memberCount) {
         return GroupDto.builder()
                 .id(group.getId())
@@ -28,6 +31,20 @@ public class GroupDto {
                 .category(group.getCategory())
                 .memberCount(memberCount)
                 .createdAt(group.getCreatedAt())
+                .build();
+    }
+
+    public static GroupDto fromEntity(Group group, int memberCount, List<GroupMemberDto> members) {
+        return GroupDto.builder()
+                .id(group.getId())
+                .name(group.getName())
+                .description(group.getDescription())
+                .groupImageUrl(group.getGroupImageUrl())
+                .ownerId(group.getOwner().getId())
+                .category(group.getCategory())
+                .memberCount(memberCount)
+                .createdAt(group.getCreatedAt())
+                .members(members)
                 .build();
     }
 }

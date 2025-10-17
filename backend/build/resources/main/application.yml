@@ -72,3 +72,11 @@ firebase:
 aladin:
   api:
     key: ttbheebi16541715001
+    
+badge:
+  base-url: "https://objectstorage.ap-osaka-1.oraclecloud.com/n/axfmxzr7cohq/b/melting-images/o"
+  
+app:
+  frontend:
+    base-url: https://meltingbooks.o-r.kr
+
