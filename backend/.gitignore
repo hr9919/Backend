@@ -1,0 +1,9 @@
+target/
+*.jar
+*.class
+*.log
+.env
+
+# Firebase 서비스 계정 키
+/src/main/resources/firebase-service-account.json
+/build/resources/main/firebase-service-account.json
