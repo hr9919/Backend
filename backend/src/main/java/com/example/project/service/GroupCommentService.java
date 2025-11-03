@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
+import com.example.project.events.CommentCreatedEvent; // ✅ 추가
 
 // ✅ 추가: 배지 자동 평가용
 import com.example.project.service.badge.BadgeService;
@@ -29,6 +31,11 @@ public class GroupCommentService {
     private final GroupCommentRepository groupCommentRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final UserRepository userRepository;
+    
+     private final NotificationService notificationService;
+    // 이벤트 발행용
+    private final ApplicationEventPublisher eventPublisher;
+
 
     // ✅ 추가
     private final BadgeService badgeService;
@@ -78,10 +85,25 @@ public class GroupCommentService {
                 .build();
 
         GroupComment saved = groupCommentRepository.save(comment);
+        
+
 
         // ✅ 배지 자동 평가 (댓글 작성자 기준)
         // ReviewShareMaster(소통) 쪽 누적/연속 조건을 즉시 반영
         badgeService.evaluateAll(userId);
+        
+         // ✅ 이벤트 발행
+        eventPublisher.publishEvent(new CommentCreatedEvent(
+                saved.getId(),
+                userId,
+                CommentCreatedEvent.TargetType.GROUP_POST,
+                postId,
+                groupId,
+                post.getUser().getId()
+        ));
+        // 그룹 댓글 생성 직후 알림 바로 보내기
+        notificationService.pushToUser(post.getUser().getId(),"댓글 알림","내 그룹 게시글에 댓글이 달렸어요");
+        
 
         return GroupCommentDto.from(saved);
     }

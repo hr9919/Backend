@@ -6,6 +6,7 @@ import com.example.project.service.AuthTokenService;
 import com.example.project.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.example.project.service.UserFcmTokenService;
 
 @RestController
 @RequestMapping("/test")
@@ -14,6 +15,7 @@ public class TestController {
 
     private final JwtUtil jwtUtil;                     // /validate 용 (선택)
     private final AuthTokenService authTokenService;   // ✅ DB 저장형 발급
+    private final UserFcmTokenService fcmService;      // ✅ 추가
 
     /** ❗ 기존 방식: DB 미저장 → refresh API와 호환 안 됨 (남겨도 되지만 주의) */
     @Deprecated
@@ -48,6 +50,13 @@ public class TestController {
     public String validateToken(@RequestParam String token) {
         Long userId = jwtUtil.validateToken(token);
         return "UserId: " + userId;
+    }
+    
+     // --- FCM 테스트용 알림 전송 추가 ---
+    @PostMapping("/fcm")
+    public String sendFcmTest(@RequestParam String fcmToken) {
+    fcmService.sendTestNotification(fcmToken);
+    return "FCM 테스트 알림 전송 완료";
     }
 }
 

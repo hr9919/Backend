@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.ApplicationEventPublisher;
+import com.example.project.events.LikeCreatedEvent; // ✅ 추가
+import com.example.project.events.PostCreatedEvent; // ✅ 추가
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +34,11 @@ public class GroupPostService {
     private final GroupCommentRepository groupCommentRepository;
     private final GroupPostImageRepository groupPostImageRepository;
     private final StorageService storageService;
+    
+    private final NotificationService notificationService;
+    // 이벤트 발행용
+    private final ApplicationEventPublisher eventPublisher;
+
 
     // ✅ 배지 서비스 주입
     private final BadgeService badgeService;
@@ -177,6 +185,17 @@ public class GroupPostService {
             // 필요 시 특정 타입만:
             // badgeService.evaluateAndAward(BadgeType.REVIEW_SHARE_MASTER, userId);
         }
+        
+        // ✅ 이벤트 발행
+        eventPublisher.publishEvent(new PostCreatedEvent(
+                saved.getId(),
+                userId,
+                groupId
+        ));
+        
+        notificationService.pushToUser(null, // 특정 유저 없고, 그룹 멤버 전체 대상으로 처리 필요하면 토큰 조회 후 반복 호출
+        "새 게시글 알림","그룹에 새 게시글이 등록되었어요");
+
 
         return GroupPostDto.fromEntity(saved);
     }
@@ -417,6 +436,18 @@ public class GroupPostService {
             // 또는 필요시 아래만:
             // badgeService.evaluateAndAward(BadgeType.REVIEW_SHARE_MASTER, post.getUser().getId());
         }
+        
+        // ✅ 이벤트 발행
+        eventPublisher.publishEvent(new LikeCreatedEvent(
+                like.getId(),
+                userId,
+                LikeCreatedEvent.TargetType.GROUP_POST,
+                post.getId(),
+                post.getGroup().getId(),
+                post.getUser().getId()
+        ));
+        notificationService.pushToUser(post.getUser().getId(),"좋아요 알림","그룹 게시글에 좋아요가 달렸어요");
+
     }
 
     @Transactional

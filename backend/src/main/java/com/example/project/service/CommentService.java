@@ -12,6 +12,8 @@ import com.example.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
+import com.example.project.events.CommentCreatedEvent; // ✅ 추가
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,11 @@ public class CommentService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final LikeRepository likeRepository;
+    
+     private final NotificationService notificationService;
+    // 이벤트 발행용
+    private final ApplicationEventPublisher eventPublisher;
+
 
     // 댓글 생성
     @Transactional
@@ -40,6 +47,20 @@ public class CommentService {
                 .build();
 
         Comment saved = commentRepository.save(comment);
+        
+         // ✅ 이벤트 발행
+        eventPublisher.publishEvent(new CommentCreatedEvent(
+                saved.getId(),
+                userId,
+                CommentCreatedEvent.TargetType.REVIEW,
+                reviewId,
+                null,
+                review.getUser().getId()
+        ));
+        // 댓글 생성 직후 알림 바로 보내기
+        notificationService.pushToUser(review.getUser().getId(),"댓글 알림","내 감상문에 댓글이 달렸어요");
+        
+        
         // 생성 직후 likedByMe=false, likedUsers=[]
         return toDto(saved, userId);
     }

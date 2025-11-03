@@ -67,7 +67,7 @@ server:
   port: 8080
 
 firebase:
-  enabled: false
+  enabled: true
 
 aladin:
   api:
