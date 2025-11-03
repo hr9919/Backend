@@ -6,6 +6,10 @@ import com.example.project.entity.Review;
 import com.example.project.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +31,31 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     boolean existsByUser_IdAndReview_Id(Long userId, Long reviewId);
     boolean existsByUser_IdAndComment_CommentId(Long userId, Long commentId);
 
-    // ✅ 전체 좋아요 유저 리스트 조회
+    // 단건용
     List<Like> findByReview(Review review);
     List<Like> findByComment(Comment comment);
+
+    // ✅ 배치: viewer가 좋아요한 리뷰 ID 목록
+    @Query("""
+        select l.review.id
+        from Like l
+        where l.user.id = :viewerId
+          and l.review.id in :reviewIds
+    """)
+    List<Long> findMyLikedReviewIds(
+            @Param("viewerId") Long viewerId,
+            @Param("reviewIds") Collection<Long> reviewIds
+    );
+
+    // ✅ 배치: 여러 리뷰 좋아요를 유저와 함께 페치(최신순) → 서비스에서 리뷰별 그룹핑
+    @Query("""
+        select l
+        from Like l
+        join fetch l.user u
+        where l.review.id in :reviewIds
+        order by l.likeId desc
+    """)
+    List<Like> findByReviewIdsWithUserOrderByLikeIdDesc(
+            @Param("reviewIds") Collection<Long> reviewIds
+    );
 }

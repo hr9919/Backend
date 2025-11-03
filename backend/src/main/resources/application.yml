@@ -68,6 +68,7 @@ server:
 
 firebase:
   enabled: true
+  credentials: ${FIREBASE_CREDENTIALS:}
 
 aladin:
   api:

@@ -1,9 +1,28 @@
-target/
-*.jar
-*.class
-*.log
-.env
+# -------------------------------------
+# 🔐 Secrets & credentials
+# -------------------------------------
+src/main/resources/firebase-service-account.json
+secrets/
+*.env
+*.json
+src/main/resources/application-local.yml
 
-# Firebase 서비스 계정 키
-/src/main/resources/firebase-service-account.json
-/build/resources/main/firebase-service-account.json
+# -------------------------------------
+# 📦 Build outputs
+# -------------------------------------
+/build/
+/out/
+/target/
+/.gradle/
+/logs/
+/tmp/
+
+# -------------------------------------
+# ⚙️ IDE / OS files
+# -------------------------------------
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
